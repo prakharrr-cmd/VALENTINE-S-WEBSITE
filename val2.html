@@ -1,134 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Valentines Day</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    :root {
-      --btn-base-size: 48px;
-      --btn-max-scale: 2.2; /* cap how big the yes button can grow */
-      --transition-fast: 180ms;
-      --transition-medium: 300ms;
-    }
-
     .gradient-background {
       background: rgb(255, 208, 229);
-      background: linear-gradient(180deg, rgba(255,208,229,1) 0%, rgba(255,232,242,1) 36%, rgba(255,255,255,1) 100%);
+      background: linear-gradient(180deg, rgba(255, 208, 229, 1) 0%, rgba(255, 232, 242, 1) 36%, rgba(255, 255, 255, 1) 100%);
     }
 
-    /* image fade */
-    .image-container {
-      position: relative;
-      width: 100%;
-      max-width: 480px;
-      height: 300px;
-      overflow: hidden;
-      border-radius: 0.5rem;
-    }
-    .image-container img {
-      display: block;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: opacity var(--transition-medium) ease, transform var(--transition-medium) ease;
-      opacity: 1;
-      transform: scale(1);
-    }
-    .image-container img.fade-out {
-      opacity: 0;
-      transform: scale(0.98);
+    .bounce2 {
+      animation: bounce2 2s ease infinite;
     }
 
-    /* buttons */
-    .val-btn {
-      min-width: 96px;
-      height: var(--btn-base-size);
-      padding: 0.5rem 1rem;
-      border-radius: 0.5rem;
-      transition: transform var(--transition-medium) cubic-bezier(.2,.9,.2,1), background-color var(--transition-fast), box-shadow var(--transition-fast), opacity var(--transition-fast);
-      font-weight: 600;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      user-select: none;
-    }
-
-    .val-btn:active { transform: translateY(1px) scale(0.99); }
-
-    .yes-initial-bounce {
-      animation: initialBounce 2s ease-in-out infinite;
-    }
-    @keyframes initialBounce {
-      0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-      40% { transform: translateY(-8px); }
-      60% { transform: translateY(-4px); }
-    }
-
-    /* no button click feedback */
-    .no-shake {
-      animation: noShake 420ms ease;
-    }
-    @keyframes noShake {
-      0% { transform: translateX(0); }
-      25% { transform: translateX(-6px); }
-      50% { transform: translateX(6px); }
-      75% { transform: translateX(-4px); }
-      100% { transform: translateX(0); }
-    }
-
-    /* disabled/hide */
-    .fade-away {
-      opacity: 0;
-      pointer-events: none;
-      transform: scale(0.98);
-      transition: opacity var(--transition-medium) ease, transform var(--transition-medium) ease;
+    @keyframes bounce2 {
+      0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+      }
+      40% {
+        transform: translateY(-20px);
+      }
+      60% {
+        transform: translateY(-10px);
+      }
     }
   </style>
 </head>
-<body class="gradient-background min-h-screen flex items-center justify-center">
-  <main class="w-full max-w-2xl p-6">
-    <section class="flex flex-col items-center text-center gap-6">
-      <div class="image-container shadow-lg">
-        <img id="imageDisplay" src="./images/image1.gif" alt="Cute kitten with flowers" />
-      </div>
-
-      <h2 id="valentineQuestion" class="text-4xl font-bold italic text-[#bd1e59] my-2">Will you be my Valentine?</h2>
-
-      <div id="responseButtons" class="flex gap-4 items-center">
-        <button id="yesButton" aria-label="Yes, I will be your valentine" class="val-btn bg-green-500 text-white hover:bg-green-600 shadow-md yes-initial-bounce" title="Yes">
+<body class="gradient-background">
+  <div class="flex items-center justify-center h-screen">
+    <div class="flex flex-col items-center p-4">
+      <img id="imageDisplay" src="./images/image1.gif" alt="Cute kitten with flowers" class="rounded-md h-[300px]" style="object-fit: cover;" />
+      <h2 id="valentineQuestion" class="text-4xl font-bold italic text-[#bd1e59] my-4">Will you be my Valentine?</h2>
+      <div class="flex gap-4 pt-[20px] items-center" id="responseButtons">
+        <button id="yesButton"
+          class="bounce2 inline-flex items-center justify-center whitespace-nowrap rounded-md text-[20px] font-medium disabled:pointer-events-none disabled:opacity-50 hover:bg-green-400 min-h-12 min-w-[75px] px-4 py-2 bg-green-500 text-white transition">
           Yes
         </button>
-
-        <button id="noButton" aria-label="No, I will not be your valentine" class="val-btn bg-red-500 text-white hover:bg-red-600 shadow-md" title="No">
+        <button id="noButton"
+          class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-[20px] font-medium transition disabled:pointer-events-none disabled:opacity-50 hover:bg-red-700 h-12 min-w-[75px] w-auto px-4 py-2 bg-red-500 text-white">
           No
         </button>
       </div>
-    </section>
-  </main>
+    </div>
+  </div>
 
   <script type="module">
     import confetti from 'https://cdn.skypack.dev/canvas-confetti';
-
-    // DOM
     const yesButton = document.getElementById('yesButton');
     const noButton = document.getElementById('noButton');
     const imageDisplay = document.getElementById('imageDisplay');
     const valentineQuestion = document.getElementById('valentineQuestion');
     const responseButtons = document.getElementById('responseButtons');
-
-    // Messages and images
-    const noMessages = [
-      "No",
-      "Are you sure?",
-      "Pookie please",
-      "Don't do this to me :(",
-      "You're breaking my heart",
-      "I'm gonna cry..."
-    ];
-
+  
+    let noClickCount = 0;
+    let buttonHeight = 48; // Starting height in pixels
+    let buttonWidth = 80;
+    let fontSize = 20; // Starting font size in pixels
     const imagePaths = [
       "./images/image1.gif",
       "./images/image2.gif",
@@ -138,120 +67,29 @@
       "./images/image6.gif",
       "./images/image7.gif"
     ];
-
-    // Preload images for smooth transitions
-    const preloaded = [];
-    for (const p of imagePaths) {
-      const img = new Image();
-      img.src = p;
-      preloaded.push(img);
-    }
-
-    // State
-    let noIndex = 0;            // index into noMessages
-    let imageIndex = 0;         // index into imagePaths
-    let yesScale = 1;          // scale factor for yes button
-    const scaleStep = 0.16;    // how much to grow per No click
-    const maxScale = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--btn-max-scale')) || 2.2;
-
-    // Helper: gracefully swap image with fade
-    function setImage(src) {
-      const imgEl = imageDisplay;
-      // Add fade-out class
-      imgEl.classList.add('fade-out');
-      // After transition ends, swap src and fade in
-      const onFade = () => {
-        imgEl.removeEventListener('transitionend', onFade);
-        imgEl.src = src;
-        // Wait a tick for the new image to load; if cached, onload may not fire, so use a small timeout fallback
-        imgEl.onload = () => {
-          requestAnimationFrame(() => {
-            imgEl.classList.remove('fade-out');
-          });
-        };
-        setTimeout(() => {
-          // ensure we remove fade-out even if onload didn't fire
-          requestAnimationFrame(() => imgEl.classList.remove('fade-out'));
-        }, 80);
-      };
-      imgEl.addEventListener('transitionend', onFade);
-    }
-
-    // No button click behavior: cycle messages and images, scale yes button slightly and cap
-    noButton.addEventListener('click', () => {
-      // gentle shake feedback
-      noButton.classList.remove('no-shake');
-      // restart animation
-      void noButton.offsetWidth;
-      noButton.classList.add('no-shake');
-
-      // advance message index with wrap-around
-      noIndex = (noIndex + 1) % noMessages.length;
-      noButton.textContent = noMessages[noIndex];
-
-      // advance image index with wrap-around (but keep within available images)
-      imageIndex = (imageIndex + 1) % imagePaths.length;
-      setImage(imagePaths[imageIndex]);
-
-      // scale the Yes button smoothly, but cap to maxScale
-      yesScale = Math.min(maxScale, yesScale + scaleStep);
-      yesButton.style.transform = `scale(${yesScale})`;
-      // ensure accessible size remains reasonable; update aria-label to reflect current scale
-      yesButton.setAttribute('aria-label', `Yes, I will be your valentine (size ${Math.round(yesScale*100)}%)`);
-    });
-
-    // Yes button: celebration
-    yesButton.addEventListener('click', async () => {
-      // stop initial bounce
-      yesButton.classList.remove('yes-initial-bounce');
-
-      // set celebratory image (use last image or image7)
-      setImage(imagePaths[imagePaths.length - 1] || imagePaths[0]);
-
-      // update text
-      valentineQuestion.textContent = "Yayyy!! :3";
-
-      // fade out the response buttons
-      responseButtons.classList.add('fade-away');
-
-      // fire confetti with a sweeter burst
-      confetti({
-        particleCount: 180,
-        spread: 70,
-        origin: { y: 0.4 },
-        scalar: 1.1,
-      });
-
-      // small additional bursts
-      setTimeout(() => confetti({ particleCount: 80, spread: 100, origin: { y: 0.2 } }), 350);
-    });
-
-    // Keyboard accessibility: Enter triggers Yes, Escape cycles No
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') yesButton.click();
-      if (e.key === 'Escape') noButton.click();
-    });
-
-    // initial aria/text setup
-    noButton.textContent = noMessages[0];
-    imageDisplay.alt = "Cute kitten with flowers - valentine images";
-
-    // Safety: ensure buttons use GPU for transform rendering (smooth)
-    yesButton.style.willChange = 'transform';
-    noButton.style.willChange = 'transform';
-
-    // Resize handler: if viewport gets small, adjust scale cap
-    window.addEventListener('resize', () => {
-      const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
-      // if very narrow, reduce cap to avoid button exceeding container
-      const newMax = vw < 420 ? 1.6 : 2.2;
-      // apply new cap
-      // Note: CSS var is not updated here; just ensure we don't exceed the computed cap
-      if (yesScale > newMax) {
-        yesScale = newMax;
-        yesButton.style.transform = `scale(${yesScale})`;
+  
+    noButton.addEventListener('click', function() {
+      if (noClickCount < 5) {
+        noClickCount++;
+        imageDisplay.src = imagePaths[noClickCount];
+        buttonHeight += 35; // Increase height by 5px on each click
+        buttonWidth += 35;
+        fontSize += 25; // Increase font size by 1px on each click
+        yesButton.style.height = `${buttonHeight}px`; // Update button height
+        yesButton.style.width = `${buttonWidth}px`;
+        yesButton.style.fontSize = `${fontSize}px`; // Update font size
+        if (noClickCount < 6) {
+          noButton.textContent = ["No", "Are you sure?", "Pookie please", "Don't do this to me :(", "You're breaking my heart", "I'm gonna cry..."][noClickCount];
+        }
       }
     });
-  </script>
+  
+    yesButton.addEventListener('click', () => {
+      imageDisplay.src = './images/image7.gif'; // Change to image7.gif
+      valentineQuestion.textContent = "Yayyy!! :3"; // Change the question text
+      responseButtons.style.display = 'none'; // Hide both buttons
+      confetti(); // Trigger confetti animation
+    });
+  </script>  
 </body>
 </html>
